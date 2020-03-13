@@ -52,6 +52,7 @@ For a given wavenumber k, we use the frequency
 [[a]] means take the integer part of the value of a
 
 #### Statistical Wave Models and the Fourier Transform
+[Details about Fourier Transform](doc/FFT.md)  
 The fft-based representation of a wave height field expresses the wave height `h(x, t)` at the horizontal position `x = (x, z)` as the sum of sinusoids with complex, time-dependent amplitudes:
 - > h(**x**,t) =sum_k( ̃h(**k**,t) exp(i**k** · **x**) )  
 where **k** is a two-dimensional vector with components, **k** = (kx,kz), kx = 2πn/Lx, kz = 2πm/Lz, and n and m are integers with bounds −N/2 ≤ n < N/2 and −M/2 ≤ m < M/2.
