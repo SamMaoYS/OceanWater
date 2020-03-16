@@ -12,19 +12,20 @@
 
 int main(int argc, const char * argv[]) {
 	// Test code
-	math_utils::FFT fft(8);
-	GLuint a = fft.bitReversal(1);
+	int fs = 1000;
+	GLfloat period = 1.0/(GLfloat) fs;
+	int len = 8;
+	vector<math_utils::Complex> t;
 	
-	vector<vector<math_utils::Complex>> comp;
-	fft.getRootUnityTable(comp);
-	for (int i = 0; i<3; i++) {
-		for (int j = 0; j<pow(2, i+1); j++) {
-			cout<<comp[i][j].X() << "  ";
-			cout<<comp[i][j].Y() << endl;
-		}
-		cout << "------------"<<endl;
+	for (int i=0; i<len; i++) {
+		math_utils::Complex temp(0.7*sin(2*glm::pi<GLfloat>()*50*period*i)+sin(2*glm::pi<GLfloat>()*120*period*i), 0);
+		t.push_back(temp);
 	}
-	cout << sin(glm::pi<GLfloat>());
-	cout << a;
+	
+	vector<math_utils::Complex> out;
+	out.resize(len);
+	math_utils::FFT fourier(len);
+	fourier.fft(t, out, 1, 0);
+	
 	return 0;
 }

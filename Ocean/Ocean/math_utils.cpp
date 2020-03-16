@@ -48,9 +48,7 @@ math_utils::Complex &Complex::operator=(const math_utils::Complex &comp) {
 
 FFT::FFT(GLuint n):n_(n) {
 	stages_ = (GLuint) glm::log2((GLdouble)n_);
-	input_vector_.resize(n_);
 	this->getInputVector(input_vector_);
-	w_table_.resize(stages_);
 	this->getRootUnityTable(w_table_);
 }
 
@@ -76,7 +74,7 @@ GLuint FFT::bitReversal(GLuint num) {
 	return rev;
 }
 
-void FFT::getInputVector(vector<GLuint> input) {
+void FFT::getInputVector(vector<GLuint>& input) {
 	for (int i = 0; i < n_; i++) {
 		input.push_back(bitReversal(i));
 	}
@@ -105,7 +103,6 @@ void FFT::getRootUnityTable(vector<vector<Complex>>& table) {
 void FFT::fft(vector<Complex>& in, vector<Complex>& out, GLint stride, GLint offset) {
 	// Bit reverse copy
 	vector<Complex> result;
-	result.resize(n_);
 	for (int i=0; i < n_; i++) {
 		result.push_back(in[input_vector_[i]*stride + offset]);
 	}

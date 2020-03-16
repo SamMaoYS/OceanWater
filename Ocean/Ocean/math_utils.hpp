@@ -46,7 +46,7 @@ public:
 	// Reverse a number according to binary bits
 	GLuint bitReversal(GLuint num);
 	// get the bit reversed input vector
-	void getInputVector(vector<GLuint> input);
+	void getInputVector(vector<GLuint>& input);
 	// Get the root unity of a complex plane commonly writes as W
 	Complex getRootUnity(GLuint x, GLuint y);
 	// Get the root unity matrix
