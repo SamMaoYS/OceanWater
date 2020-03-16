@@ -52,13 +52,11 @@ public:
 	// Get the root unity matrix
 	void getRootUnityTable(vector<vector<Complex>>& table);
 	// Perform the fast fourier transform
-	void transform(Complex *in, Complex *out, GLint stride, GLint offset);
+	void fft(vector<Complex>& in, vector<Complex>& out, GLint stride, GLint offset);
 	
 private:
 	// Number of points
 	GLuint n_;
-	// Index of each point
-	GLuint index_;
 	// The number of stages FFT requires which is log2(number of points)
 	GLuint stages_;
 	// The bit inversed input vector

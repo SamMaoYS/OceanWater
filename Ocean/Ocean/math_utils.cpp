@@ -52,7 +52,6 @@ FFT::FFT(GLuint n):n_(n) {
 	this->getInputVector(input_vector_);
 	w_table_.resize(stages_);
 	this->getRootUnityTable(w_table_);
-	index_ = 0;
 }
 
 FFT::~FFT() {
@@ -92,18 +91,38 @@ Complex FFT::getRootUnity(GLuint index, GLuint n) {
 }
 
 void FFT::getRootUnityTable(vector<vector<Complex>>& table) {
-	GLint pow_of_2 = 2;
-	for (int i = 0; i < stages_; i++) {
+	for (int i = 1; i <= stages_; i++) {
+		GLint pow_of_2 = pow(2, i);
 		vector<Complex> row(pow_of_2);
 		for (int j = 0; j < pow_of_2; j++) {
 			!j ? row[j] = (this->getRootUnity(j, pow_of_2))
 			: row[pow_of_2 - j] = (this->getRootUnity(j, pow_of_2));
 		}
 		table.push_back(row);
-		pow_of_2 *= 2;
 	}
 }
 
-void FFT::transform(Complex *in, Complex *out, GLint stride, GLint offset) {
+void FFT::fft(vector<Complex>& in, vector<Complex>& out, GLint stride, GLint offset) {
+	// Bit reverse copy
+	vector<Complex> result;
+	result.resize(n_);
+	for (int i=0; i < n_; i++) {
+		result.push_back(in[input_vector_[i]*stride + offset]);
+	}
 	
+	for (int i=0; i < stages_; i++) {
+		int m = pow(2, i+1);
+		for (int k = 0; k < n_; k += m) {
+			for (int j = 0; j < m/2; j++) {
+				Complex u = result[k+j];
+				Complex t = result[k+j+m/2];
+				result[k+j] = u + t*w_table_[i][j];
+				result[k+j+m/2] = u + t*w_table_[i][j+m/2];
+			}
+		}
+	}
+	
+	for (int i = 0; i < n_; i++) {
+		out[i*stride + offset] = result[i];
+	}
 }
