@@ -60,3 +60,12 @@ where **k** is a two-dimensional vector with components, **k** = (kx,kz), kx = 2
 The fft process generates the height field at discrete points `x = (nLx/N,mLz/M)`
 An exact computation of the slope vector can be obtained by using more ffts   
 - > ε(x,t) = ∇h(x,t) = sum_k(i **k** ̃h(**k**,t) exp(i**k** · **x**) )
+
+#### Building a Random Ocean Wave Height Field
+The Fourier amplitudes of a wave height field can be produced as
+- > ~h0(**k**) = 1/sqrt(2) * (ξr+iξi)sqrt(Ph(**k**))  
+where ξr and ξi are ordinary independent draws from a gaussian random number generator, with mean 0 and standard deviation 1.  
+Given a dispersion relation ω(k), the Fourier amplitudes of the wave field realization at time t are
+- > ̃h(**k**,t) = ̃h0(**k**)exp{iw(k)t} + ̃h0\*(**k**)exp{-iw(k)t}  
+
+the complex conjugation property h\*(**k**,t) = ̃h(−k, t) by propagating waves “to the left” and “to the right”.
