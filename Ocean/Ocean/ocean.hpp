@@ -10,7 +10,6 @@
 #define ocean_hpp
 
 #include "ocean_struct.h"
-#include "math_utils.hpp"
 
 class Ocean {
 public:
@@ -20,9 +19,36 @@ public:
 	
 	// Initialize the parameters of the ocean
 	bool initialize(const glm::ivec2 dim, const glm::vec2 size, const glm::vec2 wind, GLfloat amplitude, GLint repeat);
+	// Initialize the amplitude of the ocean
+	bool initAmplitude();
+	
+	inline GLfloat cvtN2Kx(GLint n) {
+		return glm::two_pi<GLfloat>() * (GLfloat)n / len_x_;
+	}
+	
+	inline GLfloat cvtM2Kz(GLint m) {
+		return glm::two_pi<GLfloat>() * (GLfloat)m / len_z_;
+	}
+	
+	inline glm::vec2 cvtNM2K(GLint n, GLint m) {
+		return glm::vec2(cvtN2Kx(n), cvtM2Kz(m));
+	}
 	
 	// Compute the phillips spectrum
-	GLfloat getPhillips(GLint n, GLint m);
+	GLfloat calPhillips(const glm::vec2 k);
+	
+	// The dispersion relation for animating the waves
+	GLfloat calDispersion(const glm::vec2 k);
+	
+	// The Fourier amplitudes of a wave height field
+	math_utils::Complex calRandomAmplitude(const glm::vec2 k);
+	
+	// Fourier amplitudes of the wave field realization at time t with dispersion
+	math_utils::Complex calAmplitudeAtTime(const glm::vec2 k, GLfloat t);
+	
+	inline void setCycleTime(const GLfloat t) {
+		this->cycle_t_ = t;
+	}
 	
 	inline glm::ivec2 getDimension() {
 		return glm::ivec2(dim_x_, dim_z_);

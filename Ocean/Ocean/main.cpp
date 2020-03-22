@@ -37,15 +37,19 @@ int main(int argc, const char * argv[]) {
 	Ocean* ocean = new Ocean();
 	glm::ivec2 dim = glm::ivec2(100, 150);
 	glm::vec2 size = glm::vec2(200.0f, 300.0f);
-	glm::vec2 wind = glm::vec2(0.0f, 1.0f);
-	ocean->initialize(dim, size, wind, 1, 2);
+	glm::vec2 wind = glm::vec2(20.0f, 10.0f);
+	ocean->initialize(dim, size, wind, 2, 2);
+	
+	glm::vec2 k(0.5, 2);
+	math_utils::Complex h = ocean->calAmplitudeAtTime(k, 2);
 	
 	cout << ocean->getDimension().x << endl;
 	cout << ocean->getSize().x << endl;
+	cout << h.X() << endl;
 #endif
 	
 #if TEST_PHILLIPS
-	cout << ocean->getPhillips(60, 70) << endl;
+	cout << ocean->calPhillips(glm::vec2(60, 70)) << endl;
 	math_utils::Complex random_1 = math_utils::getGaussRandomNum();
 	cout << random_1.X() << "  " << random_1.Y() << endl;
 	math_utils::Complex random_2 = math_utils::getGaussRandomNum();
