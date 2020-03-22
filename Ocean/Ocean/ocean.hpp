@@ -13,11 +13,24 @@
 #include "math_utils.hpp"
 
 class Ocean {
+public:
 	Ocean();
-	Ocean(const glm::ivec2 dim, const glm::ivec2 len, const glm::vec2 wind, GLint repeat);
+	Ocean(const glm::ivec2 dim, const glm::vec2 size, const glm::vec2 wind, GLfloat amplitude, GLint repeat);
 	~Ocean();
 	
-	bool initialize();
+	// Initialize the parameters of the ocean
+	bool initialize(const glm::ivec2 dim, const glm::vec2 size, const glm::vec2 wind, GLfloat amplitude, GLint repeat);
+	
+	// Compute the phillips spectrum
+	GLfloat getPhillips(GLint n, GLint m);
+	
+	inline glm::ivec2 getDimension() {
+		return glm::ivec2(dim_x_, dim_z_);
+	}
+	
+	inline glm::vec2 getSize() {
+		return glm::vec2(len_x_, len_z_);
+	}
 	
 private:
 	// The dimensions of the ocean plane
@@ -38,6 +51,8 @@ private:
 	GLfloat cycle_t_;
 	// The basic frequence w = 2*pi / t
 	GLfloat freq_w_;
+	// Accelerate the convergence of phillips spectrum when wave number is large
+	GLfloat convergence_;
 	
 	// The number of ocean copies along one dimension
 	GLint repeat_;
@@ -53,9 +68,14 @@ private:
 	vector<math_utils::Complex> h_dz_;
 	
 	// Fast Fourier transform
-	vector<math_utils::FFT> fft_;
+	math_utils::FFT* fft_x_;
+	math_utils::FFT* fft_z_;
 	
-	
+	// The structure of ocean surface
+	vector<ocean_struct::ocean_vector> ocean_vecotrs_;
+	// Indices for vertices of ocean surface
+	vector<GLuint> line_indices_;
+	vector<GLuint> triang_indices_;
 };
 
 #endif /* ocean_hpp */

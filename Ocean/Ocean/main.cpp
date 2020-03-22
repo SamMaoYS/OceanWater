@@ -7,11 +7,16 @@
 //
 
 #include <iostream>
-#include "ocean_struct.h"
-#include "math_utils.hpp"
+#include "ocean.hpp"
+
+#define TEST_MATHUTILS 0
+#define TEST_OCEAN 1
+#define TEST_PHILLIPS 1
+#define TEST_GUASSIANRANDOM 1
 
 int main(int argc, const char * argv[]) {
 	// Test code
+#if TEST_MATHUTILS
 	int fs = 1000;
 	GLfloat period = 1.0/(GLfloat) fs;
 	int len = 8;
@@ -26,6 +31,27 @@ int main(int argc, const char * argv[]) {
 	out.resize(len);
 	math_utils::FFT fourier(len);
 	fourier.fft(t, out, 1, 0);
+#endif
 	
+#if TEST_OCEAN
+	Ocean* ocean = new Ocean();
+	glm::ivec2 dim = glm::ivec2(100, 150);
+	glm::vec2 size = glm::vec2(200.0f, 300.0f);
+	glm::vec2 wind = glm::vec2(0.0f, 1.0f);
+	ocean->initialize(dim, size, wind, 1, 2);
+	
+	cout << ocean->getDimension().x << endl;
+	cout << ocean->getSize().x << endl;
+#endif
+	
+#if TEST_PHILLIPS
+	cout << ocean->getPhillips(60, 70) << endl;
+	math_utils::Complex random_1 = math_utils::getGaussRandomNum();
+	cout << random_1.X() << "  " << random_1.Y() << endl;
+	math_utils::Complex random_2 = math_utils::getGaussRandomNum();
+	cout << random_2.X() << "  " << random_2.Y() << endl;
+	math_utils::Complex random_3 = math_utils::getGaussRandomNum();
+	cout << random_3.X() << "  " << random_3.Y() << endl;
+#endif
 	return 0;
 }

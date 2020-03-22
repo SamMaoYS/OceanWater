@@ -123,3 +123,17 @@ void FFT::fft(vector<Complex>& in, vector<Complex>& out, GLint stride, GLint off
 		out[i*stride + offset] = result[i];
 	}
 }
+
+inline Complex getGaussRandomNum() {
+	GLfloat u1, u2;
+	do {
+		u1 = (GLfloat) rand() * (1.0 / RAND_MAX);
+		u2 = (GLfloat) rand() * (1.0 / RAND_MAX);
+	} while (u1 <= numeric_limits<GLfloat>::min());
+	
+	GLfloat z0, z1;
+	z0 = sqrt(-2.0 * log(u1))*cos(glm::two_pi<GLfloat>()*u2);
+	z1 = sqrt(-2.0 * log(u1))*sin(glm::two_pi<GLfloat>()*u2);
+	
+	return Complex(z0, z1);
+}
