@@ -8,11 +8,14 @@
 
 #include <iostream>
 #include "ocean.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #define TEST_MATHUTILS 0
 #define TEST_OCEAN 1
 #define TEST_PHILLIPS 1
 #define TEST_GUASSIANRANDOM 1
+#define TEST_OPENCV 1
 
 int main(int argc, const char * argv[]) {
 	// Test code
@@ -58,5 +61,14 @@ int main(int argc, const char * argv[]) {
 	math_utils::Complex random_3 = math_utils::getGaussRandomNum();
 	cout << random_3.X() << "  " << random_3.Y() << endl;
 #endif
+	
+#if TEST_OPENCV
+	cv::Mat img(500, 500, CV_8UC1, cv::Scalar::all(0));
+	
+	cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Display window", img);
+	cv::waitKey(0);
+#endif
+	
 	return 0;
 }
