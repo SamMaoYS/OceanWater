@@ -32,6 +32,10 @@ public:
 	Complex operator*(const Complex & comp) const;
 	Complex operator*(const GLfloat scalar) const;
 	Complex &operator=(const Complex & comp);
+	Complex &operator+=(const Complex & comp);
+	Complex &operator-=(const Complex & comp);
+	Complex &operator*=(const Complex & comp);
+	Complex &operator*=(const GLfloat scalar);
 
 private:
 	GLfloat x_, y_;

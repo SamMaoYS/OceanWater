@@ -46,6 +46,30 @@ math_utils::Complex &Complex::operator=(const math_utils::Complex &comp) {
 	return *this;
 }
 
+math_utils::Complex &Complex::operator+=(const math_utils::Complex &comp) {
+	this->x_ += comp.X();
+	this->y_ += comp.Y();
+	return *this;
+}
+
+math_utils::Complex &Complex::operator-=(const math_utils::Complex &comp) {
+	this->x_ -= comp.X();
+	this->y_ -= comp.Y();
+	return *this;
+}
+
+math_utils::Complex &Complex::operator*=(const math_utils::Complex &comp) {
+	this->x_ = this->x_*comp.X() - this->y_*comp.Y();
+	this->y_ = this->x_*comp.Y() + this->y_*comp.X();
+	return *this;
+}
+
+math_utils::Complex &Complex::operator*=(const GLfloat scalar) {
+	this->x_ *= scalar;
+	this->y_ *= scalar;
+	return *this;
+}
+
 FFT::FFT(GLuint n):n_(n) {
 	stages_ = (GLuint) glm::log2((GLdouble)n_);
 	this->getInputVector(input_vector_);

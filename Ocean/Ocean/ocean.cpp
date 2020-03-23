@@ -136,6 +136,35 @@ math_utils::Complex Ocean::calAmplitudeAtTime(const glm::vec2 k, GLfloat t) {
 	return h;
 }
 
+ocean_struct::ocean_surface Ocean::calAmplitude(const glm::vec2 x, GLfloat t) {
+	math_utils::Complex h(0.0f, 0.0f);
+	glm::vec2 displace(0.0f);
+	glm::vec3 normal(0.0f);
+	
+	for (GLint m = 0; m < dim_z_; m++) {
+		for (GLint n = 0; n < dim_x_; n++) {
+			glm::vec2 k(cvtN2Kx(n), cvtM2Kz(m));
+			math_utils::Complex h_fourier = calAmplitudeAtTime(k, t) * math_utils::Complex(cos(glm::dot(k, x)), sin(glm::dot(k, x)));
+			h += h_fourier;
+			// slope of waves, mutiply ik to h for the adding part, since i*i = -1
+			// therefore multiply the -1 * imaginary number
+			normal += glm::vec3(-k.x*h_fourier.Y(), 0.0f, -k.y*h_fourier.Y());
+			if ((glm::length(k) - numeric_limits<GLfloat>::epsilon()) > 0) {
+				// displacement of waves, mutiply -ik/|k| to h for the adding part
+				displace += glm::vec2(k.x/glm::length(k)*h_fourier.Y(), k.y/glm::length(k)*h_fourier.Y());
+			}
+		}
+	}
+	// add the difference to original normal vector
+	normal = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f) - normal);
+	ocean_struct::ocean_surface surface;
+	surface.displace = displace;
+	surface.normal = normal;
+	surface.height = h;
+	
+	return surface;
+}
+
 bool Ocean::initAmplitude() {
 	glm::vec3 up_norm(0.0f, 1.0f, 0.0f);
 	this->ocean_vecotrs_.clear();

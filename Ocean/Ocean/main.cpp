@@ -46,6 +46,7 @@ int main(int argc, const char * argv[]) {
 	cout << ocean->getDimension().x << endl;
 	cout << ocean->getSize().x << endl;
 	cout << h.X() << endl;
+	cout << glm::length(wind) << endl;
 #endif
 	
 #if TEST_PHILLIPS

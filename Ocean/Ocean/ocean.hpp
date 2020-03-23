@@ -34,17 +34,18 @@ public:
 		return glm::vec2(cvtN2Kx(n), cvtM2Kz(m));
 	}
 	
-	// Compute the phillips spectrum
+	// Calculate the phillips spectrum
 	GLfloat calPhillips(const glm::vec2 k);
 	
-	// The dispersion relation for animating the waves
+	// Calculate the dispersion relation for animating the waves
 	GLfloat calDispersion(const glm::vec2 k);
 	
-	// The Fourier amplitudes of a wave height field
+	// Calculate the Fourier amplitudes of a wave height field
 	math_utils::Complex calRandomAmplitude(const glm::vec2 k);
-	
-	// Fourier amplitudes of the wave field realization at time t with dispersion
+	// Calculate Fourier amplitudes of the wave field realization at time t with dispersion
 	math_utils::Complex calAmplitudeAtTime(const glm::vec2 k, GLfloat t);
+	// Calculate complex, time-dependent amplitudesn at horizontal position x = (x, z)
+	ocean_struct::ocean_surface calAmplitude(const glm::vec2 x, GLfloat t);
 	
 	inline void setCycleTime(const GLfloat t) {
 		this->cycle_t_ = t;

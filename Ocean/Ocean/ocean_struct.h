@@ -20,6 +20,17 @@ struct ocean_vector {
 	math_utils::Complex height_ampl;
 	math_utils::Complex height_conj;
 };
+
+struct ocean_surface {
+	glm::vec2 displace;
+	glm::vec3 normal;
+	math_utils::Complex height;
+};
+
+enum RENDER_GEOMETRY {
+	RENDER_LINES = 0,
+	RENDER_TRIANGLES = 1
+};
 }
 
 #endif /* ocean_struct_h */
