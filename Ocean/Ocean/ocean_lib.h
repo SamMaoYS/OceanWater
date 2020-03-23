@@ -9,6 +9,7 @@
 #pragma once
 
 #include <iostream>
+#include <cstdlib>
 #include <vector>
 
 #include <GL/glew.h>

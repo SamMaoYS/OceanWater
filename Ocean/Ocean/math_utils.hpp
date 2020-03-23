@@ -32,6 +32,10 @@ public:
 	Complex operator*(const Complex & comp) const;
 	Complex operator*(const GLfloat scalar) const;
 	Complex &operator=(const Complex & comp);
+	Complex &operator+=(const Complex & comp);
+	Complex &operator-=(const Complex & comp);
+	Complex &operator*=(const Complex & comp);
+	Complex &operator*=(const GLfloat scalar);
 
 private:
 	GLfloat x_, y_;
@@ -64,6 +68,20 @@ private:
 	// The table of roots of unity of all the power of 2 input points
 	vector<vector<Complex>> w_table_;
 };
+
+inline Complex getGaussRandomNum() {
+	GLfloat u1, u2;
+	do {
+		u1 = (GLfloat) rand() * (1.0 / RAND_MAX);
+		u2 = (GLfloat) rand() * (1.0 / RAND_MAX);
+	} while (u1 <= numeric_limits<GLfloat>::min());
+	
+	GLfloat z0, z1;
+	z0 = sqrt(-2.0 * log(u1))*cos(glm::two_pi<GLfloat>()*u2);
+	z1 = sqrt(-2.0 * log(u1))*sin(glm::two_pi<GLfloat>()*u2);
+	
+	return Complex(z0, z1);
+}
 }
 
 #endif /* math_utils_hpp */
