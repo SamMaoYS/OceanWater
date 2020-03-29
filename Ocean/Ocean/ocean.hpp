@@ -22,15 +22,15 @@ public:
 	// Initialize the amplitude of the ocean
 	bool initAmplitude();
 	
-	inline GLfloat cvtN2Kx(GLint n) {
-		return glm::two_pi<GLfloat>() * (GLfloat)n / len_x_;
+	inline GLfloat cvtN2Kx(const GLint n) {
+		return glm::two_pi<GLfloat>() * (GLfloat)(n - dim_x_/2.0) / len_x_;
 	}
 	
-	inline GLfloat cvtM2Kz(GLint m) {
-		return glm::two_pi<GLfloat>() * (GLfloat)m / len_z_;
+	inline GLfloat cvtM2Kz(const GLint m) {
+		return glm::two_pi<GLfloat>() * (GLfloat)(m - dim_x_/2.0) / len_z_;
 	}
 	
-	inline glm::vec2 cvtNM2K(GLint n, GLint m) {
+	inline glm::vec2 cvtNM2K(const GLint n, const GLint m) {
 		return glm::vec2(cvtN2Kx(n), cvtM2Kz(m));
 	}
 	
@@ -47,6 +47,9 @@ public:
 	// Calculate complex, time-dependent amplitudesn at horizontal position x = (x, z)
 	ocean_struct::ocean_surface calAmplitude(const glm::vec2 x, GLfloat t);
 	
+	void calOceanWaves(GLfloat t);
+	void calOceanWavesFFT(GLfloat t);
+	
 	inline void setCycleTime(const GLfloat t) {
 		this->cycle_t_ = t;
 	}
@@ -57,6 +60,10 @@ public:
 	
 	inline glm::vec2 getSize() {
 		return glm::vec2(len_x_, len_z_);
+	}
+	
+	inline vector<ocean_struct::ocean_vector> getOceanVector() {
+		return this->ocean_vecotrs_;
 	}
 	
 private:
@@ -97,7 +104,7 @@ private:
 	// Fast Fourier transform
 	math_utils::FFT* fft_x_;
 	math_utils::FFT* fft_z_;
-	
+
 	// The structure of ocean surface
 	vector<ocean_struct::ocean_vector> ocean_vecotrs_;
 	// Indices for vertices of ocean surface

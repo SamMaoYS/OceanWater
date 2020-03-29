@@ -172,9 +172,10 @@ bool Ocean::initAmplitude() {
 		for (GLint n = 0; n < dim_x_; n++) {
 			ocean_struct::ocean_vector vertex;
 			glm::vec2 k(cvtN2Kx(n), cvtM2Kz(m));
+			glm::vec2 x = glm::vec2((n-dim_x_/2)*len_x_/dim_x_, (m-dim_z_/2)*len_z_/dim_z_);
 			vertex.normal = up_norm;
-			vertex.curr_pos = glm::vec3(0.0f);
-			vertex.orig_pos = glm::vec3(k.x, 0.0f, k.y);
+			vertex.curr_pos = glm::vec3(x.x, 0.0f, x.y);
+			vertex.orig_pos = glm::vec3(x.x, 0.0f, x.y);
 			vertex.height_ampl = calRandomAmplitude(k);
 			vertex.height_conj = calRandomAmplitude(-k).conjugation();
 			this->ocean_vecotrs_.push_back(vertex);
@@ -182,4 +183,27 @@ bool Ocean::initAmplitude() {
 	}
 	return true;
 }
+
+void Ocean::calOceanWaves(GLfloat t) { 
+	GLfloat lamda = -1.0f;
+	
+	for (GLint m = 0; m < dim_z_; m++) {
+		for (GLint n = 0; n < dim_x_; n++) {
+			GLint idx = m*dim_x_ + n;
+			glm::vec2 x = glm::vec2(ocean_vecotrs_[idx].curr_pos.x, ocean_vecotrs_[idx].curr_pos.z);
+			ocean_struct::ocean_surface surface = calAmplitude(x, t);
+			
+			ocean_vecotrs_[idx].curr_pos.y = surface.height.X();
+			ocean_vecotrs_[idx].curr_pos.x = ocean_vecotrs_[idx].orig_pos.x + lamda*surface.displace.x;
+			ocean_vecotrs_[idx].curr_pos.z = ocean_vecotrs_[idx].orig_pos.z + lamda*surface.displace.y;
+			
+			ocean_vecotrs_[idx].normal = surface.normal;
+		}
+	}
+}
+
+void Ocean::calOceanWavesFFT(GLfloat t) { 
+	return;
+}
+
 
