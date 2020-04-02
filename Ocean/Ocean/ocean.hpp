@@ -47,7 +47,9 @@ public:
 	// Calculate complex, time-dependent amplitudesn at horizontal position x = (x, z)
 	ocean_struct::ocean_surface calAmplitude(const glm::vec2 x, GLfloat t);
 	
+	// Calculate the ocean surface wave positions, amplitudes, normal vetors
 	void calOceanWaves(GLfloat t);
+	
 	void calOceanWavesFFT(GLfloat t);
 	
 	inline void setCycleTime(const GLfloat t) {

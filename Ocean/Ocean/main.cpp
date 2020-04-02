@@ -45,7 +45,7 @@ int main(int argc, const char * argv[]) {
 #endif
 	
 #if TEST_OPENCV
-	cv::Mat img(150, 150, CV_32FC1, cv::Scalar::all(0));
+	cv::Mat img(500, 500, CV_32FC1, cv::Scalar::all(0));
 	vector<ocean_struct::ocean_vector> ocean_vector;
 	ocean_vector = ocean->getOceanVector();
 	float min = numeric_limits<float>::max();
@@ -54,12 +54,14 @@ int main(int argc, const char * argv[]) {
 		for (int j=0; j<dim.y; j++) {
 			int idx = i*dim.y+j;
 			int x, y;
-			
-				x = (int) (ocean_vector[idx].curr_pos.x / 320.0 * 64 + 150/2);
-			
-			
-				y = (int) (ocean_vector[idx].curr_pos.z / 320.0 * 64 + 150/2);
-			
+			x = (int) (ocean_vector[idx].curr_pos.x + 500.0/2);
+			y = (int) (ocean_vector[idx].curr_pos.z + 500.0/2);
+			if (x < 0 || x > 499) {
+				continue;
+			}
+			if (y < 0 || y > 499) {
+				continue;
+			}
 			float intensity = log(ocean_vector[idx].curr_pos.y);
 			if (intensity < min) {
 				min = intensity;
