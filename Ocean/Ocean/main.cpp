@@ -8,11 +8,12 @@
 
 #include <iostream>
 #include "ocean.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #define TEST_MATHUTILS 0
 #define TEST_OCEAN 1
-#define TEST_PHILLIPS 1
-#define TEST_GUASSIANRANDOM 1
+#define TEST_OPENCV 1
 
 int main(int argc, const char * argv[]) {
 	// Test code
@@ -35,28 +36,50 @@ int main(int argc, const char * argv[]) {
 	
 #if TEST_OCEAN
 	Ocean* ocean = new Ocean();
-	glm::ivec2 dim = glm::ivec2(100, 150);
-	glm::vec2 size = glm::vec2(200.0f, 300.0f);
-	glm::vec2 wind = glm::vec2(20.0f, 10.0f);
-	ocean->initialize(dim, size, wind, 2, 2);
+	glm::ivec2 dim = glm::ivec2(64, 64);
+	glm::vec2 size = glm::vec2(320.0f, 320.0f);
+	glm::vec2 wind = glm::vec2(0.0f, 12.8f);
+	ocean->initialize(dim, size, wind, 0.005, 1);
+	ocean->calOceanWaves(1.0);
 	
-	glm::vec2 k(0.5, 2);
-	math_utils::Complex h = ocean->calAmplitudeAtTime(k, 2);
-	
-	cout << ocean->getDimension().x << endl;
-	cout << ocean->getSize().x << endl;
-	cout << h.X() << endl;
-	cout << glm::length(wind) << endl;
 #endif
 	
-#if TEST_PHILLIPS
-	cout << ocean->calPhillips(glm::vec2(60, 70)) << endl;
-	math_utils::Complex random_1 = math_utils::getGaussRandomNum();
-	cout << random_1.X() << "  " << random_1.Y() << endl;
-	math_utils::Complex random_2 = math_utils::getGaussRandomNum();
-	cout << random_2.X() << "  " << random_2.Y() << endl;
-	math_utils::Complex random_3 = math_utils::getGaussRandomNum();
-	cout << random_3.X() << "  " << random_3.Y() << endl;
+#if TEST_OPENCV
+	cv::Mat img(500, 500, CV_32FC1, cv::Scalar::all(0));
+	vector<ocean_struct::ocean_vector> ocean_vector;
+	ocean_vector = ocean->getOceanVector();
+	float min = numeric_limits<float>::max();
+	float max = -numeric_limits<float>::max();
+	for (int i = 0; i<dim.x; i++) {
+		for (int j=0; j<dim.y; j++) {
+			int idx = i*dim.y+j;
+			int x, y;
+			x = (int) (ocean_vector[idx].curr_pos.x + 500.0/2);
+			y = (int) (ocean_vector[idx].curr_pos.z + 500.0/2);
+			if (x < 0 || x > 499) {
+				continue;
+			}
+			if (y < 0 || y > 499) {
+				continue;
+			}
+			float intensity = log(ocean_vector[idx].curr_pos.y);
+			if (intensity < min) {
+				min = intensity;
+			}
+			if (intensity > max) {
+				max = intensity;
+			}
+			img.at<float>(x, y) = log(ocean_vector[idx].curr_pos.y);
+		}
+	}
+	
+	cv::Mat result;
+	float scale = 255.0 / max - min;
+	img.convertTo(result, CV_8UC1, scale, -min*scale);
+	cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Display window", result);
+	cv::waitKey(0);
 #endif
+	
 	return 0;
 }

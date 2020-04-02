@@ -172,9 +172,10 @@ bool Ocean::initAmplitude() {
 		for (GLint n = 0; n < dim_x_; n++) {
 			ocean_struct::ocean_vector vertex;
 			glm::vec2 k(cvtN2Kx(n), cvtM2Kz(m));
+			glm::vec2 x = glm::vec2((n-dim_x_/2)*len_x_/dim_x_, (m-dim_z_/2)*len_z_/dim_z_);
 			vertex.normal = up_norm;
-			vertex.curr_pos = glm::vec3(0.0f);
-			vertex.orig_pos = glm::vec3(k.x, 0.0f, k.y);
+			vertex.curr_pos = glm::vec3(x.x, 0.0f, x.y);
+			vertex.orig_pos = glm::vec3(x.x, 0.0f, x.y);
 			vertex.height_ampl = calRandomAmplitude(k);
 			vertex.height_conj = calRandomAmplitude(-k).conjugation();
 			this->ocean_vecotrs_.push_back(vertex);
@@ -182,4 +183,66 @@ bool Ocean::initAmplitude() {
 	}
 	return true;
 }
+
+void Ocean::calOceanWaves(GLfloat t) {
+	for (GLint m = 0; m < dim_z_; m++) {
+		for (GLint n = 0; n < dim_x_; n++) {
+			GLint idx = m*dim_x_ + n;
+			glm::vec2 x = glm::vec2(ocean_vecotrs_[idx].curr_pos.x, ocean_vecotrs_[idx].curr_pos.z);
+			ocean_struct::ocean_surface surface = calAmplitude(x, t);
+			
+			ocean_vecotrs_[idx].curr_pos.y = surface.height.X();
+			ocean_vecotrs_[idx].curr_pos.x = ocean_vecotrs_[idx].orig_pos.x - surface.displace.x;
+			ocean_vecotrs_[idx].curr_pos.z = ocean_vecotrs_[idx].orig_pos.z - surface.displace.y;
+			
+			ocean_vecotrs_[idx].normal = surface.normal;
+		}
+	}
+}
+
+void Ocean::calOceanWavesFFT(GLfloat t) {
+	for (GLint m = 0; m < dim_z_; m++) {
+		for (GLint n = 0; n < dim_x_; n++) {
+			GLint idx = m*dim_x_ + n;
+			glm::vec2 k(cvtN2Kx(n), cvtM2Kz(m));
+			GLfloat len = glm::length(k);
+			
+			h_[idx] = calAmplitudeAtTime(k, t);
+			// slope of waves, mutiply ik to h for the adding part
+			h_derivative_x_[idx] = h_[idx]*math_utils::Complex(0.0f, k.x);
+			h_derivative_z_[idx] = h_[idx]*math_utils::Complex(0.0f, k.y);
+			
+			// smallest unit value of dx or dz
+			if (len < numeric_limits<float>::epsilon()) {
+				h_dx_[idx] = math_utils::Complex();
+				h_dz_[idx] = math_utils::Complex();
+			}
+			else {
+				h_dx_[idx] = h_[idx]*math_utils::Complex(0.0f, -k.x/len);
+				h_dz_[idx] = h_[idx]*math_utils::Complex(0.0f, -k.y/len);
+			}
+		}
+	}
+	
+	// Calculate fft for each row, which is in dimension z
+	for (GLint m = 0; m < dim_z_; m++) {
+		fft_z_->fft(h_, h_, 1, m*dim_x_);
+		fft_z_->fft(h_derivative_x_, h_derivative_x_, 1, m*dim_x_);
+		fft_z_->fft(h_derivative_z_, h_derivative_z_, 1, m*dim_x_);
+		fft_z_->fft(h_dx_, h_dx_, 1, m*dim_x_);
+		fft_z_->fft(h_dz_, h_dz_, 1, m*dim_x_);
+	}
+	
+	// Calculate fft for each column, which is in dimension x
+	for (GLint n = 0; n < dim_x_; n++) {
+		fft_x_->fft(h_, h_, dim_x_, n);
+		fft_x_->fft(h_derivative_x_, h_derivative_x_, dim_x_, n);
+		fft_x_->fft(h_derivative_z_, h_derivative_z_, dim_x_, n);
+		fft_x_->fft(h_dx_, h_dx_, dim_x_, n);
+		fft_x_->fft(h_dz_, h_dz_, dim_x_, n);
+	}
+	
+	
+}
+
 
